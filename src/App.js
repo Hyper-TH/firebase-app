@@ -2,7 +2,13 @@ import { useEffect, useState } from 'react';
 import './App.css';
 import { Auth } from './components/auth';
 import { db } from './config/firebase';
-import { getDocs, collection, addDoc, deleteDoc, doc } from 'firebase/firestore'
+import { getDocs, 
+		collection, 
+		addDoc, 
+		deleteDoc, 
+		updateDoc, 
+		doc } 
+from 'firebase/firestore'
 
 function App() {
 	// State to keep track of db
@@ -12,6 +18,9 @@ function App() {
 	const [newMovieTitle, setNewMovieTitle] = useState("");
 	const [newReleaseDate, setNewReleaseDate] = useState(0);
 	const [isNewMovieOscar, setIsNewMovieOscar] = useState(false);
+
+	// Update Title State
+	const [updatedTitle, setUpdatedTitle] = useState("");
 
 	// Reference to collection
 	// collection(db, name_of_collection)
@@ -38,6 +47,15 @@ function App() {
 		// Create movie doc, specify document from this db and collection name, and id
 		const movieDoc = doc(db, "movies", id);
 		await deleteDoc(movieDoc);
+		getMovieList();
+	};
+
+	// There is a bug here, try updating the title of one and select a different submit button
+	// Fix: use different specific components instead
+	const updateMovieTitle = async (id) => {
+		// Create movie doc, specify document from this db and collection name, and id
+		const movieDoc = doc(db, "movies", id);
+		await updateDoc(movieDoc, {title: updatedTitle});
 		getMovieList();
 	};
 
@@ -91,6 +109,12 @@ function App() {
 						<p> Date {movie.releaseDate} </p>
 
 						<button onClick={() => deleteMovie(movie.id)}> Delete Movie </button>
+					
+						<input 
+							placeholder='new title...' 
+							onChange={(e) => setUpdatedTitle(e.target.value)}
+						/>
+						<button onClick={() => updateMovieTitle(movie.id)}> Update Title </button>
 					</div>
 				))}
 			</div>
