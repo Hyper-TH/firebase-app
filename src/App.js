@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import './App.css';
 import { Auth } from './components/auth';
 import { db } from './config/firebase';
-import { getDocs, collection, addDoc } from 'firebase/firestore'
+import { getDocs, collection, addDoc, deleteDoc, doc } from 'firebase/firestore'
 
 function App() {
 	// State to keep track of db
@@ -33,6 +33,13 @@ function App() {
 		};
 
 	};	
+
+	const deleteMovie = async (id) => {
+		// Create movie doc, specify document from this db and collection name, and id
+		const movieDoc = doc(db, "movies", id);
+		await deleteDoc(movieDoc);
+		getMovieList();
+	};
 
 	// Run this immediately when get into site
 	useEffect(() => {
@@ -82,6 +89,8 @@ function App() {
 							{movie.title} 
 						</h1>
 						<p> Date {movie.releaseDate} </p>
+
+						<button onClick={() => deleteMovie(movie.id)}> Delete Movie </button>
 					</div>
 				))}
 			</div>
